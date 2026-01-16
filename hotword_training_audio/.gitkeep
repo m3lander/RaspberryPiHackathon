@@ -1,0 +1,15 @@
+# Place your "Hey Pi" training audio files here
+# You need 4 audio files saying "Hey Pi"
+# 
+# Option A: Generate with ElevenLabs TTS
+#   1. Go to https://elevenlabs.io/app/speech-synthesis/text-to-speech
+#   2. Type "Hey Pi"
+#   3. Generate with 4 different voices
+#   4. Download and save as hey_pi_1.mp3, hey_pi_2.mp3, etc.
+#
+# Option B: Record yourself
+#   1. Record yourself saying "Hey Pi" 4 times
+#   2. Save as separate files
+#
+# Then run the training script:
+#   python train_wakeword.py

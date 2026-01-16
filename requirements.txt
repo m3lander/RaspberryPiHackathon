@@ -1,0 +1,28 @@
+# Cash Recognition Voice Assistant - Python Dependencies
+# Requires Python 3.11 (not 3.13) due to tflite-runtime compatibility
+
+# ElevenLabs Conversational AI
+elevenlabs[pyaudio]>=1.50.0
+
+# Wake word detection (requires Python 3.11 or earlier)
+tflite-runtime
+librosa
+EfficientWord-Net
+
+# Google Gemini
+google-generativeai>=0.8.0
+
+# Camera (USB via OpenCV)
+opencv-python-headless>=4.8.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# System dependencies (run setup_pi.sh or install manually):
+# sudo apt-get install -y libportaudio2 libportaudiocpp0 portaudio19-dev \
+#   libasound-dev libsndfile1-dev ffmpeg mpv libcap-dev python3-picamera2
+
+# Note: picamera2 is NOT in this file because:
+# 1. It must be installed via apt (sudo apt install python3-picamera2)
+# 2. It requires libcamera which is a system library
+# 3. Our code calls system Python via subprocess for Pi Camera operations
