@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
-Cash Recognition Voice Assistant
+eBay Item Recognition Voice Assistant
 
-A voice-activated assistant that helps identify banknotes.
-Say "Hey Pi" to activate, then ask about the money you're holding.
+A voice-activated assistant that helps identify items for eBay listings.
+Say "Hey Pi" to activate, then show an item for detailed description.
 
 Usage:
     python main.py
@@ -115,6 +115,7 @@ def create_conversation(elevenlabs, agent_id, requires_auth):
     # Register client tools
     client_tools = ClientTools()
     client_tools.register("identify_cash", identify_cash_tool_handler)
+    client_tools.register("identify_item", identify_item_tool_handler)
     client_tools.register("read_packaging", read_packaging_tool_handler)
     
     return Conversation(
@@ -174,6 +175,52 @@ def identify_cash_tool() -> str:
         import traceback
         traceback.print_exc()
         return f"Sorry, I had trouble identifying the cash: {str(e)}"
+
+
+def identify_item_tool_handler(parameters: dict) -> str:
+    """
+    Client tool handler called by ElevenLabs when the agent invokes identify_item.
+    The parameters dict comes from the agent (can be empty for this tool).
+    """
+    print(f"\n🔧 identify_item tool called with: {parameters}")
+    return identify_item_tool()
+
+
+def identify_item_tool() -> str:
+    """
+    Client tool that captures an image and identifies e-commerce items.
+    This is called by the ElevenLabs agent when the user asks about an item for eBay.
+    """
+    global camera
+
+    print("📸 Capturing image...")
+
+    if camera is None:
+        return "Sorry, the camera is not available. Please check the camera connection."
+
+    # Capture image
+    image_bytes = camera.capture()
+
+    if image_bytes is None:
+        return "Sorry, I couldn't capture an image. Please check the camera."
+
+    print(f"📸 Captured {len(image_bytes)} bytes")
+
+    # Analyze with Gemini
+    print("🔍 Analyzing item with Gemini...")
+
+    try:
+        from tools.item_recognition import identify_item
+        result = identify_item(image_bytes=image_bytes)
+
+        print(f"🏷️ Result: {result}")
+
+        return result
+    except Exception as e:
+        print(f"❌ Error identifying item: {e}")
+        import traceback
+        traceback.print_exc()
+        return f"Sorry, I had trouble identifying the item: {str(e)}"
 
 
 def read_packaging_tool_handler(parameters: dict) -> str:
@@ -254,7 +301,7 @@ def main():
     global conversation, mic_stream, camera
     
     print("\n" + "=" * 60)
-    print("💰 Cash Recognition Voice Assistant")
+    print("🏷️ eBay Item Recognition Voice Assistant")
     print("=" * 60)
     
     # Set up signal handler

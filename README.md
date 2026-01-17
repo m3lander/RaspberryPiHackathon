@@ -1,16 +1,29 @@
-# Cash Recognition Voice Assistant
+# eBay Item Recognition Voice Assistant
 
-A voice-activated assistant for Raspberry Pi that helps blind and visually impaired users identify banknotes.
+A voice-activated assistant for Raspberry Pi that helps visually impaired eBay sellers identify and describe items for listings.
 
-**Say "Hey Pi" → Ask about your money → Get spoken feedback**
+**Say "Hey Pi" → Show an item → Get a detailed description for your listing**
 
 ## Features
 
 - 🎤 **Wake word activation** - Say "Hey Pi" to start
 - 💬 **Natural conversation** - Chat with the assistant powered by ElevenLabs
-- 📷 **Camera recognition** - Identifies banknotes using Google Gemini AI
+- 📷 **Camera recognition** - Identifies items using Google Gemini AI
 - 🔊 **Voice output** - Clear spoken responses via headphones
-- 💷 **Multi-currency** - Works with British Pounds, Euros, US Dollars, and more
+- 🏷️ **eBay-focused** - Describes brand, size, color, condition, and defects
+
+## What It Identifies
+
+When you show an item to the camera, the assistant describes:
+
+- **Item type** - What the item is (jacket, phone, handbag, etc.)
+- **Brand** - Visible logos and labels
+- **Size** - S/M/L, numeric sizes, or dimensions
+- **Color** - Primary and secondary colors
+- **Condition** - New with tags, Like new, Good, Fair, Poor
+- **Defects** - Stains, scratches, tears, missing parts
+- **Material** - Fabric type, metal, leather, etc.
+- **Special features** - Pockets, patterns, hardware
 
 ## Hardware Required
 
@@ -39,11 +52,11 @@ A voice-activated assistant for Raspberry Pi that helps blind and visually impai
    - **Choose Device**: Raspberry Pi 5
    - **Choose OS**: Raspberry Pi OS (64-bit)
    - **Choose Storage**: Your SD card
-4. Click the **⚙️ gear icon** (or "Edit Settings") and configure:
-   - ✅ Set hostname: Choose a name (e.g., `raspberrypi` or `mypi`)
-   - ✅ Set username and password: **Write these down!**
-   - ✅ Configure WiFi: Enter your network name and password
-   - ✅ Enable SSH: Use password authentication
+4. Click the **gear icon** (or "Edit Settings") and configure:
+   - Set hostname: Choose a name (e.g., `raspberrypi` or `mypi`)
+   - Set username and password: **Write these down!**
+   - Configure WiFi: Enter your network name and password
+   - Enable SSH: Use password authentication
 5. Click **Save**, then **Write**
 6. Wait for write + verification to complete
 
@@ -72,20 +85,20 @@ On your **computer** (not the Pi), clone or download this repo, then copy it to 
 
 ```bash
 # Clone the repo (on your computer)
-git clone https://github.com/yourusername/AccessibilityHackathon.git
+git clone https://github.com/yourusername/RaspberryPiHackathon.git
 
 # Copy to Pi
-scp -r AccessibilityHackathon youruser@yourhostname.local:~/
+scp -r RaspberryPiHackathon youruser@yourhostname.local:~/
 ```
 
 Or if you already have the folder:
 ```bash
-scp -r /path/to/AccessibilityHackathon youruser@yourhostname.local:~/
+scp -r /path/to/RaspberryPiHackathon youruser@yourhostname.local:~/
 ```
 
 ### Step 5: Install Python 3.11
 
-> ⚠️ **Important:** Raspberry Pi OS (Debian Trixie) comes with Python 3.13, but the wake word library (`tflite-runtime`) requires Python 3.11. You MUST install Python 3.11 using pyenv.
+> **Important:** Raspberry Pi OS (Debian Trixie) comes with Python 3.13, but the wake word library (`tflite-runtime`) requires Python 3.11. You MUST install Python 3.11 using pyenv.
 
 SSH into your Pi and run:
 
@@ -116,7 +129,7 @@ pyenv install 3.11.9
 ### Step 6: Run Setup Script
 
 ```bash
-cd ~/AccessibilityHackathon
+cd ~/RaspberryPiHackathon
 chmod +x setup_pi.sh
 ./setup_pi.sh
 ```
@@ -190,7 +203,7 @@ Save with Ctrl+O, Enter, Ctrl+X.
 
 ### Step 9: Train Wake Word
 
-The assistant uses a custom wake word to activate. By default, we use **"Hey Pi"**, but **you can choose any phrase you like** (e.g., "Hey Assistant", "Hello Pi", "Cash Helper").
+The assistant uses a custom wake word to activate. By default, we use **"Hey Pi"**, but **you can choose any phrase you like** (e.g., "Hey Assistant", "Hello Pi", "eBay Helper").
 
 ```bash
 source .venv/bin/activate
@@ -205,7 +218,7 @@ python train_wakeword.py
 **Option B - Use text-to-speech:**
 - The script can generate samples using Google TTS
 
-After training, you'll see: `✅ Wake word trained successfully!`
+After training, you'll see: `Wake word trained successfully!`
 
 > **Tip**: Choose a phrase that's easy to say and distinctive. Two-syllable phrases like "Hey Pi" work well because they're short but unique enough to avoid false triggers.
 
@@ -217,7 +230,7 @@ Quick summary:
 1. Go to [ElevenLabs Agents](https://elevenlabs.io/app/conversational-ai/agents)
 2. Create a new agent with "Blank Template"
 3. Add the system prompt (see SETUP_AGENT.md)
-4. Add the `identify_cash` **Client Tool**
+4. Add the `identify_item` **Client Tool**
 5. Copy the Agent ID to your `.env` file
 
 ### Step 11: Test Components
@@ -238,7 +251,7 @@ python test_full_flow.py
 python main.py
 ```
 
-Say **"Hey Pi"** and then ask: "What banknote am I holding?"
+Say **"Hey Pi"** and then ask: "What is this item?" while holding up something to sell.
 
 ## Project Structure
 
@@ -256,22 +269,29 @@ Say **"Hey Pi"** and then ask: "What banknote am I holding?"
 │   ├── usb_camera.py       # USB camera (OpenCV)
 │   └── pi_camera.py        # Pi Camera 3 (picamera2)
 ├── tools/
-│   └── cash_recognition.py # Gemini banknote analysis
+│   ├── item_recognition.py # Gemini e-commerce item analysis
+│   ├── cash_recognition.py # Gemini banknote analysis
+│   └── packaging_reader.py # Gemini text/label reading
 ├── hotword_training_audio/ # Wake word training samples
 └── hotword_refs/           # Trained wake word model
 ```
 
 ## Usage Examples
 
-**Basic usage:**
-> "Hey Pi"  
-> "What money do I have?"  
-> *"I can see a twenty pound note. That's twenty pounds."*
+**Describing an item for eBay:**
+> "Hey Pi"
+> "What is this item?"
+> *"This is a men's navy blue blazer from Ralph Lauren, size Large. It's in excellent condition with two front pockets and gold-colored buttons. I can see a small fabric pull on the left sleeve, but otherwise no visible defects."*
 
-**Checking a single note:**
-> "Hey Pi"  
-> "What's this note?"  
-> *"That's a fifty pound note, the polymer version showing Alan Turing."*
+**Checking condition:**
+> "Hey Pi"
+> "Are there any defects?"
+> *"I can see a small stain near the collar and some light pilling on the sleeves. The zipper works fine and all buttons are present."*
+
+**Reading a label:**
+> "Hey Pi"
+> "Read the size tag"
+> *"The label says it's a size Medium, 100% cotton, made in Vietnam. Machine wash cold, tumble dry low."*
 
 ## Troubleshooting
 
@@ -304,7 +324,7 @@ ps aux | grep pyenv
 
 **Solution**: Convert your audio files to WAV:
 ```bash
-cd ~/AccessibilityHackathon/hotword_training_audio
+cd ~/RaspberryPiHackathon/hotword_training_audio
 for f in *.mp3 *.m4a; do
   ffmpeg -i "$f" -ar 16000 -ac 1 "${f%.*}.wav"
 done
@@ -348,9 +368,9 @@ rm *.mp3 *.m4a  # Remove originals
 ### Agent Doesn't Use the Tool
 **Problem**: Agent says "I don't have access to tools"
 
-**Solution**: 
+**Solution**:
 1. Ensure the tool is added as a **Client Tool** (not webhook)
-2. Tool name must be exactly `identify_cash`
+2. Tool name must be exactly `identify_item`
 3. Update the System Prompt to mention the tool
 4. Click Save in the ElevenLabs dashboard
 
@@ -359,7 +379,7 @@ rm *.mp3 *.m4a  # Remove originals
 ### WebSocket Timeout
 **Problem**: `TimeoutError: timed out while waiting for handshake response`
 
-**Solution**: 
+**Solution**:
 1. Check internet: `curl -I https://api.elevenlabs.io`
 2. Verify Agent ID is correct
 3. Try again (sometimes temporary)
@@ -403,11 +423,11 @@ rpicam-hello --list-cameras
 # Should show: "0 : imx708 [4608x2592 ...]"
 
 # Update your .env file
-nano ~/AccessibilityHackathon/.env
+nano ~/RaspberryPiHackathon/.env
 # Change: CAMERA_TYPE=pi
 
 # Test the camera
-cd ~/AccessibilityHackathon
+cd ~/RaspberryPiHackathon
 source .venv/bin/activate
 python test_camera_capture.py
 ```

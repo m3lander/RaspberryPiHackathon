@@ -1,70 +1,79 @@
 # ElevenLabs Agent Setup Guide
 
-This guide walks you through creating your Cash Recognition Agent in the ElevenLabs dashboard.
+This guide walks you through creating your eBay Item Recognition Agent in the ElevenLabs dashboard.
 
 ## Step 1: Create an Agent
 
 1. Go to [ElevenLabs Conversational AI Agents](https://elevenlabs.io/app/conversational-ai/agents)
 2. Click **"Create Agent"** or **"+ New Agent"**
 3. Select **"Blank Template"**
-4. Give it a name like "Cash Recognition Assistant"
+4. Give it a name like "eBay Listing Assistant"
 
 ## Step 2: Configure Basic Settings
 
 ### First Message
 Set the agent's greeting:
 ```
-Hey! I'm your assistant. I can identify banknotes or read text from packaging and labels. What would you like help with?
+Hey! I'm your eBay listing assistant. Hold up an item to the camera and I'll describe it for you - including brand, size, color, and condition.
 ```
 
 ### System Prompt
 This is critical - the prompt must tell the agent about its tools. Copy and paste:
 
 ```
-You are a friendly assistant that helps visually impaired users. You have two tools:
+You are a friendly assistant that helps visually impaired eBay sellers create item listings. You have two tools:
 
-1. "identify_cash" - Captures an image and identifies banknotes/currency
-2. "read_packaging" - Captures an image and reads text from packaging, labels, or medication boxes
+1. "identify_item" - Captures an image and identifies e-commerce item details for eBay listings
+2. "read_packaging" - Captures an image and reads text from clothing tags, care labels, or product packaging
 
-WHEN TO USE identify_cash:
-- When the user asks about money, cash, banknotes, notes, or currency
-- When the user asks "what am I holding?" and it's about money
-- When the user wants to know the value of their money
+WHEN TO USE identify_item:
+- When the user asks "What is this item?" or "Describe this"
+- When the user wants to list something on eBay
+- When the user asks about brand, size, color, or condition
+- When the user shows you clothing, electronics, accessories, or any sellable item
+- When the user asks "What am I holding?"
 
 WHEN TO USE read_packaging:
-- When the user asks about ingredients, labels, or packaging
-- When the user asks about medication, pills, or dosage
-- When the user wants cooking instructions or preparation info
-- When the user asks "what does this say?" about a box or package
+- When the user specifically asks to "read the tag" or "read the label"
+- When the user asks about size tags or care instructions
+- When the user wants material composition or washing instructions
+- When the user asks "What does this say?" about a tag or label
 
-AFTER IDENTIFYING CASH:
-- State each note's denomination clearly (e.g., "twenty pounds")
-- Mention the currency (e.g., "British Pound Sterling")
-- If multiple notes, give the total
+AFTER IDENTIFYING AN ITEM, include:
+- Item type (e.g., "men's jacket", "smartphone")
+- Brand name if visible
+- Size (S/M/L, numeric, or dimensions)
+- Colors (primary and secondary)
+- Condition (New with tags, Like new, Good, Fair, Poor)
+- Any visible defects (stains, tears, scratches, missing parts)
+- Material if identifiable
+- Special features (pockets, patterns, hardware)
 
-AFTER READING PACKAGING:
-- Read the product name first
-- For food: read ingredients, mention allergens, give cooking instructions
-- For medication: emphasize drug name, dosage, and warnings
-- Mention expiry dates if visible
+AFTER READING A TAG/LABEL:
+- Read the brand name
+- Read the size
+- Read material composition
+- Mention care instructions
+- Note country of manufacture if visible
 
 HANDLING ISSUES:
-- If nothing visible: suggest holding the item closer to the camera
-- If image is blurry: "The image is unclear. Hold it still for a moment."
-- If unsure: Be honest and describe what you can see
+- If the image is blurry: "The image is unclear. Please hold the item still."
+- If you can't see the item clearly: "Please hold the item closer to the camera."
+- If details are unclear: Be honest about what you cannot determine.
 
 CONVERSATION STYLE:
-- Keep responses brief and natural
-- Be warm and patient
-- Don't repeat yourself
+- Keep responses conversational but thorough
+- Describe items as you would to someone who cannot see them
+- Be specific about defects - eBay buyers appreciate honesty
+- Don't repeat information unnecessarily
 ```
 
 ### LLM Model
 Choose: **Gemini 2.5 Flash** (or your preferred model)
 
-## Step 3: Add the Client Tool
+## Step 3: Add the Item Recognition Tool
 
-This is the most important step! The tool allows the agent to capture images.
+This is the most important step! The tool allows the agent to capture and analyze items.
 
 1. In the agent settings, scroll to **"Tools"** section
 2. Click **"+ Add Tool"**
@@ -76,10 +85,10 @@ Fill in the form:
 
 | Field | Value |
 |-------|-------|
-| **Name** | `identify_cash` |
-| **Description** | `Captures an image from the camera and identifies any banknotes or currency visible. Call this tool when the user asks about money, cash, notes, or wants to know what currency they are holding.` |
-| **Wait for response** | ✅ **CHECK THIS** |
-| **Disable interruptions** | ✅ **CHECK THIS** |
+| **Name** | `identify_item` |
+| **Description** | `Captures an image and identifies item details for eBay listings including brand, size, color, condition, and defects. Call this tool when the user wants to describe or list an item.` |
+| **Wait for response** | Yes |
+| **Disable interruptions** | Yes |
 | **Pre-tool speech** | Auto |
 | **Execution mode** | Immediate |
 
@@ -90,9 +99,9 @@ Leave empty - no parameters needed:
 
 ### Click "Add tool"
 
-## Step 3b: Add the Packaging Reader Tool
+## Step 3b: Add the Packaging/Label Reader Tool
 
-Add a second client tool for reading packaging and labels.
+Add a second client tool for reading clothing tags and labels.
 
 1. Click **"+ Add Tool"** again
 2. Select **"Client Tool"**
@@ -102,9 +111,9 @@ Add a second client tool for reading packaging and labels.
 | Field | Value |
 |-------|-------|
 | **Name** | `read_packaging` |
-| **Description** | `Captures an image from the camera and reads text from packaging, labels, or medication boxes. Returns ingredients, cooking instructions, drug names and dosages, warnings, and other important information.` |
-| **Wait for response** | ✅ **CHECK THIS** |
-| **Disable interruptions** | ✅ **CHECK THIS** |
+| **Description** | `Captures an image and reads text from clothing tags, care labels, or product packaging. Returns brand, size, material composition, care instructions, and other label information.` |
+| **Wait for response** | Yes |
+| **Disable interruptions** | Yes |
 | **Pre-tool speech** | Auto |
 | **Execution mode** | Immediate |
 
@@ -118,7 +127,7 @@ Leave empty - no parameters needed.
 1. Go to **"Voice"** settings tab
 2. Choose a clear, natural voice:
    - **Rachel** - Clear and friendly
-   - **Antoni** - Warm and conversational  
+   - **Antoni** - Warm and conversational
    - **Eric** - Professional
 3. Recommended settings:
    - Model: **Eleven Turbo v2** (faster)
@@ -136,8 +145,8 @@ Leave empty - no parameters needed.
 
 1. Click **"Test"** or **"Widget"** in the dashboard
 2. Have a conversation
-3. Say "What money am I holding?"
-4. You should see the agent try to call `identify_cash`
+3. Say "What item is this?"
+4. You should see the agent try to call `identify_item`
 5. (It won't work in the web test, but confirms the tool is configured)
 
 ## Step 7: Configure Your Pi
@@ -145,7 +154,7 @@ Leave empty - no parameters needed.
 On your Raspberry Pi, edit the `.env` file:
 
 ```bash
-nano ~/AccessibilityHackathon/.env
+nano ~/RaspberryPiHackathon/.env
 ```
 
 Add your credentials:
@@ -159,7 +168,7 @@ GOOGLE_API_KEY=your_google_api_key_here
 
 ### Agent says "I don't have access to tools"
 1. Make sure you added **Client Tools** (not webhook)
-2. Tool names must be exactly `identify_cash` and `read_packaging` (case-sensitive)
+2. Tool names must be exactly `identify_item` and `read_packaging` (case-sensitive)
 3. Update the System Prompt to explicitly mention both tools
 4. Click **Save** after making changes
 
@@ -176,7 +185,7 @@ GOOGLE_API_KEY=your_google_api_key_here
 ### Agent talks too much
 Add to system prompt:
 ```
-Keep responses brief and to the point. One or two sentences is ideal.
+Keep responses concise. Focus on the key details: brand, size, color, condition, and defects.
 ```
 
 ---
@@ -185,23 +194,29 @@ Keep responses brief and to the point. One or two sentences is ideal.
 
 | Tool | Name | Type | Wait for response |
 |------|------|------|-------------------|
-| Cash Recognition | `identify_cash` | Client Tool | ✅ Yes |
-| Packaging Reader | `read_packaging` | Client Tool | ✅ Yes |
+| Item Recognition | `identify_item` | Client Tool | Yes |
+| Tag/Label Reader | `read_packaging` | Client Tool | Yes |
 
-Both tools: Disable interruptions ✅, No parameters needed.
+Both tools: Disable interruptions Yes, No parameters needed.
 
 ---
+
+## Example Voice Commands
 
 Once configured, run on your Pi:
 
 ```bash
-cd ~/AccessibilityHackathon
+cd ~/RaspberryPiHackathon
 source .venv/bin/activate
 python main.py
 ```
 
 Say **"Hey Pi"** then:
-- **"What banknote am I holding?"** - to identify cash
-- **"What does this label say?"** - to read packaging
-- **"Read the ingredients"** - to read food packaging
-- **"What medication is this?"** - to read pill boxes
+- **"What is this item?"** - to identify any item
+- **"Describe this for eBay"** - to get a full listing description
+- **"What brand is this?"** - to identify brand
+- **"What size is this?"** - to check size
+- **"What condition is it in?"** - to assess condition
+- **"Are there any defects?"** - to check for wear/damage
+- **"Read the size tag"** - to read clothing labels
+- **"What does the label say?"** - to read product tags
