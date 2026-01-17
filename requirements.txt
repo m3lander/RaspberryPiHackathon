@@ -5,7 +5,7 @@
 elevenlabs[pyaudio]>=1.50.0
 
 # Wake word detection (requires Python 3.11 or earlier)
-tflite-runtime
+#tflite-runtime
 librosa
 EfficientWord-Net
 
