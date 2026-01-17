@@ -34,7 +34,7 @@ def extract_search_terms_from_description(description):
 
     response = client.models.generate_content(
         model="gemini-3-flash-preview",
-        contents="Given the very detailed description, output a more compact description suitable for search purposes in a search engine"
+        contents=["Given the very detailed description, output a more compact description suitable for search purposes in a search engine", description]
     )
 
     return response.text
