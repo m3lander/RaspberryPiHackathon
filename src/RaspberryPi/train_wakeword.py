@@ -23,7 +23,7 @@ import glob
 
 def check_audio_files():
     """Check if training audio files exist."""
-    audio_dir = "hotword_training_audio"
+    audio_dir = "../../assets/hotword_training_audio"
     
     if not os.path.exists(audio_dir):
         os.makedirs(audio_dir)

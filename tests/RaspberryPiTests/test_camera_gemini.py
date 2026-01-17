@@ -25,7 +25,7 @@ def test_camera():
     print("Testing USB Camera")
     print("=" * 50)
     
-    from camera.usb_camera import USBCamera, list_available_cameras
+    from src.RaspberryPi.camera.usb_camera import USBCamera, list_available_cameras
     
     # List available cameras
     print("\nSearching for available cameras...")
@@ -84,7 +84,7 @@ def test_gemini(image_bytes: bytes):
     
     print("✅ GOOGLE_API_KEY is set")
     
-    from tools.cash_recognition import CashRecognizer
+    from src.RaspberryPi.tools.cash_recognition import CashRecognizer
     
     print("\nInitializing Gemini...")
     try:
@@ -116,8 +116,8 @@ def test_full_pipeline():
     print("Testing Full Pipeline")
     print("=" * 50)
     
-    from camera.usb_camera import USBCamera
-    from tools.cash_recognition import identify_cash
+    from src.RaspberryPi.camera.usb_camera import USBCamera
+    from src.RaspberryPi.tools.cash_recognition import identify_cash
     
     camera_index = int(os.getenv("USB_CAMERA_INDEX", 0))
     camera = USBCamera(camera_index)

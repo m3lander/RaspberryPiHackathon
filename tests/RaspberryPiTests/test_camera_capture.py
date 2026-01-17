@@ -17,10 +17,10 @@ def main():
     camera_type = os.getenv("CAMERA_TYPE", "usb").lower()
     
     if camera_type == "pi":
-        from camera.pi_camera import PiCamera
+        from src.RaspberryPi.camera.pi_camera import PiCamera
         camera = PiCamera()
     else:
-        from camera.usb_camera import USBCamera
+        from src.RaspberryPi.camera.usb_camera import USBCamera
         camera_index = int(os.getenv("USB_CAMERA_INDEX", 0))
         camera = USBCamera(camera_index)
     
