@@ -52,10 +52,10 @@ def test_camera():
     print(f"  Camera type: {camera_type}")
     
     if camera_type == "pi":
-        from camera.pi_camera import PiCamera
+        from src.RaspberryPi.camera.pi_camera import PiCamera
         camera = PiCamera()
     else:
-        from camera.usb_camera import USBCamera
+        from src.RaspberryPi.camera.usb_camera import USBCamera
         camera_index = int(os.getenv("USB_CAMERA_INDEX", 0))
         print(f"  Camera index: {camera_index}")
         camera = USBCamera(camera_index)
@@ -89,7 +89,7 @@ def test_gemini(image_bytes):
     print("Testing Gemini Analysis")
     print("=" * 50)
     
-    from tools.cash_recognition import CashRecognizer
+    from src.RaspberryPi.tools.cash_recognition import CashRecognizer
     
     print("  🔍 Analyzing image...")
     
