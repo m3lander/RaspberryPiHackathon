@@ -10,7 +10,10 @@ A voice-activated assistant for Raspberry Pi that helps visually impaired eBay s
 - 💬 **Natural conversation** - Chat with the assistant powered by ElevenLabs
 - 📷 **Camera recognition** - Identifies items using Google Gemini AI
 - 🔊 **Voice output** - Clear spoken responses via headphones
-- 🏷️ **eBay-focused** - Describes brand, size, color, condition, and defects
+- 🏷️ **eBay item identification** - Describes brand, size, color, condition, and defects
+- 💰 **Cash recognition** - Identifies banknotes and currency
+- 📦 **Packaging reader** - Reads labels, tags, and ingredient lists
+- 👁️ **General image description** - Provides detailed visual descriptions of surroundings
 
 ## What It Identifies
 
@@ -248,25 +251,39 @@ python test_full_flow.py
 ### Step 12: Run the Assistant!
 
 ```bash
+cd src/RaspberryPi
 python main.py
 ```
 
-Say **"Hey Pi"** and then ask: "What is this item?" while holding up something to sell.
+Say **"Hey Pi"** and then try:
+- **"What is this item?"** - to identify items for eBay
+- **"What money is this?"** - to identify currency
+- **"Read the label"** - to read packaging/tags
+- **"What do you see?"** - for general visual descriptions
 
 ## Project Structure
 
 ```
-├── main.py                 # Main application
+├── src/
+│   ├── RaspberryPi/
+│   │   ├── main.py         # Main application entry point
+│   │   ├── train_wakeword.py  # Wake word training
+│   │   ├── camera/         # Camera implementations
+│   │   │   ├── base.py     # Camera interface
+│   │   │   ├── usb_camera.py  # USB camera (OpenCV)
+│   │   │   └── pi_camera.py   # Pi Camera Module
+│   │   └── tools/          # Recognition tools
+│   │       ├── cash_recognition.py  # Currency identification
+│   │       ├── item_recognition.py  # eBay item identification
+│   │       └── packaging_reader.py  # Label/packaging reader
+│   └── VisualAnalysis/
+│       └── analysis.py     # General image description
 ├── requirements.txt        # Python dependencies
 ├── env.template            # Environment variables template
-├── setup_pi.sh             # Raspberry Pi setup script
+├── shellScripts/
+│   └── setup_pi.sh         # Raspberry Pi setup script
 ├── SETUP_AGENT.md          # ElevenLabs agent setup guide
-├── train_wakeword.py       # Wake word training script
-├── test_camera_gemini.py   # Camera + Gemini test
-├── test_full_flow.py       # Full flow test
-├── camera/
-│   ├── base.py             # Camera interface
-│   ├── usb_camera.py       # USB camera (OpenCV)
+├── tests/                  # Test scripts
 │   └── pi_camera.py        # Pi Camera 3 (picamera2)
 ├── tools/
 │   ├── item_recognition.py # Gemini e-commerce item analysis

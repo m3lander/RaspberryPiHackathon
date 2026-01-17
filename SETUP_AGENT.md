@@ -21,23 +21,37 @@ Hey! I'm your eBay listing assistant. Hold up an item to the camera and I'll des
 This is critical - the prompt must tell the agent about its tools. Copy and paste:
 
 ```
-You are a friendly assistant that helps visually impaired eBay sellers create item listings. You have two tools:
+You are a friendly assistant that helps visually impaired users identify items, read labels, and recognize currency. You have four tools:
 
-1. "identify_item" - Captures an image and identifies e-commerce item details for eBay listings
+1. "identify_item" - Captures an image and identifies e-commerce item details for eBay listings (brand, size, color, condition, defects)
 2. "read_packaging" - Captures an image and reads text from clothing tags, care labels, or product packaging
+3. "identify_cash" - Captures an image and identifies banknotes/currency (denomination, currency type)
+4. "describe_image" - Captures an image and provides a detailed general description of what's visible
 
 WHEN TO USE identify_item:
-- When the user asks "What is this item?" or "Describe this"
+- When the user asks "What is this item?" or "Describe this for eBay"
 - When the user wants to list something on eBay
 - When the user asks about brand, size, color, or condition
 - When the user shows you clothing, electronics, accessories, or any sellable item
-- When the user asks "What am I holding?"
+- When the user asks "What am I holding?" (if it's a sellable item)
 
 WHEN TO USE read_packaging:
 - When the user specifically asks to "read the tag" or "read the label"
 - When the user asks about size tags or care instructions
 - When the user wants material composition or washing instructions
 - When the user asks "What does this say?" about a tag or label
+- When the user asks about ingredients or allergen information
+
+WHEN TO USE identify_cash:
+- When the user asks "What money is this?" or "How much is this?"
+- When the user wants to identify currency or banknotes
+- When the user asks "What denomination is this?"
+
+WHEN TO USE describe_image:
+- When the user asks "What do you see?" or "Describe what's in front of me"
+- When the user wants a general description of their surroundings
+- When the user asks "What's in this image?" (general context)
+- When other specific tools don't apply but the user wants visual information
 
 AFTER IDENTIFYING AN ITEM, include:
 - Item type (e.g., "men's jacket", "smartphone")
@@ -122,6 +136,52 @@ Leave empty - no parameters needed.
 
 ### Click "Add tool"
 
+## Step 3c: Add the Cash Recognition Tool
+
+Add a third client tool for identifying currency.
+
+1. Click **"+ Add Tool"** again
+2. Select **"Client Tool"**
+
+### Tool Configuration
+
+| Field | Value |
+|-------|-------|
+| **Name** | `identify_cash` |
+| **Description** | `Captures an image and identifies banknotes/currency. Returns denomination, currency type, and total value if multiple notes are visible.` |
+| **Wait for response** | Yes |
+| **Disable interruptions** | Yes |
+| **Pre-tool speech** | Auto |
+| **Execution mode** | Immediate |
+
+### Parameters
+Leave empty - no parameters needed.
+
+### Click "Add tool"
+
+## Step 3d: Add the General Image Description Tool
+
+Add a fourth client tool for general image descriptions.
+
+1. Click **"+ Add Tool"** again
+2. Select **"Client Tool"**
+
+### Tool Configuration
+
+| Field | Value |
+|-------|-------|
+| **Name** | `describe_image` |
+| **Description** | `Captures an image and provides a detailed general description of what's visible, including objects, people, settings, colors, and any relevant details. Use this for general "what do you see" questions.` |
+| **Wait for response** | Yes |
+| **Disable interruptions** | Yes |
+| **Pre-tool speech** | Auto |
+| **Execution mode** | Immediate |
+
+### Parameters
+Leave empty - no parameters needed.
+
+### Click "Add tool"
+
 ## Step 4: Voice Settings
 
 1. Go to **"Voice"** settings tab
@@ -168,8 +228,8 @@ GOOGLE_API_KEY=your_google_api_key_here
 
 ### Agent says "I don't have access to tools"
 1. Make sure you added **Client Tools** (not webhook)
-2. Tool names must be exactly `identify_item` and `read_packaging` (case-sensitive)
-3. Update the System Prompt to explicitly mention both tools
+2. Tool names must be exactly `identify_item`, `read_packaging`, `identify_cash`, and `describe_image` (case-sensitive)
+3. Update the System Prompt to explicitly mention all four tools
 4. Click **Save** after making changes
 
 ### Agent doesn't respond
@@ -196,8 +256,10 @@ Keep responses concise. Focus on the key details: brand, size, color, condition,
 |------|------|------|-------------------|
 | Item Recognition | `identify_item` | Client Tool | Yes |
 | Tag/Label Reader | `read_packaging` | Client Tool | Yes |
+| Cash Recognition | `identify_cash` | Client Tool | Yes |
+| Image Description | `describe_image` | Client Tool | Yes |
 
-Both tools: Disable interruptions Yes, No parameters needed.
+All tools: Disable interruptions Yes, No parameters needed.
 
 ---
 
@@ -212,7 +274,7 @@ python main.py
 ```
 
 Say **"Hey Pi"** then:
-- **"What is this item?"** - to identify any item
+- **"What is this item?"** - to identify any item for eBay
 - **"Describe this for eBay"** - to get a full listing description
 - **"What brand is this?"** - to identify brand
 - **"What size is this?"** - to check size
@@ -220,3 +282,7 @@ Say **"Hey Pi"** then:
 - **"Are there any defects?"** - to check for wear/damage
 - **"Read the size tag"** - to read clothing labels
 - **"What does the label say?"** - to read product tags
+- **"What money is this?"** - to identify currency/banknotes
+- **"How much is this?"** - to identify currency value
+- **"What do you see?"** - for a general description of surroundings
+- **"Describe what's in front of me"** - for general visual information

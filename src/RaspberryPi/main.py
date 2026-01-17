@@ -117,6 +117,7 @@ def create_conversation(elevenlabs, agent_id, requires_auth):
     client_tools.register("identify_cash", identify_cash_tool_handler)
     client_tools.register("identify_item", identify_item_tool_handler)
     client_tools.register("read_packaging", read_packaging_tool_handler)
+    client_tools.register("describe_image", describe_image_tool_handler)
     
     return Conversation(
         client=elevenlabs,
@@ -267,6 +268,59 @@ def read_packaging_tool() -> str:
         import traceback
         traceback.print_exc()
         return f"Sorry, I had trouble reading the packaging: {str(e)}"
+
+
+def describe_image_tool_handler(parameters: dict) -> str:
+    """
+    Client tool handler called by ElevenLabs when the agent invokes describe_image.
+    The parameters dict comes from the agent (can be empty for this tool).
+    """
+    print(f"\n🔧 describe_image tool called with: {parameters}")
+    return describe_image_tool()
+
+
+def describe_image_tool() -> str:
+    """
+    Client tool that captures an image and provides a detailed visual description.
+    This is called by the ElevenLabs agent when the user asks for a general description
+    of what they're looking at.
+    """
+    global camera
+    
+    print("📸 Capturing image...")
+    
+    if camera is None:
+        return "Sorry, the camera is not available. Please check the camera connection."
+    
+    # Capture image
+    image_bytes = camera.capture()
+    
+    if image_bytes is None:
+        return "Sorry, I couldn't capture an image. Please check the camera."
+    
+    print(f"📸 Captured {len(image_bytes)} bytes")
+    
+    # Analyze with VisualAnalysis
+    print("🔍 Analyzing image with VisualAnalysis...")
+    
+    try:
+        import sys
+        import os
+        # Add src directory to path to import VisualAnalysis
+        src_dir = os.path.join(os.path.dirname(__file__), '..', '..')
+        if src_dir not in sys.path:
+            sys.path.insert(0, src_dir)
+        from VisualAnalysis.analysis import describe_image
+        result = describe_image(image_bytes=image_bytes)
+        
+        print(f"👁️ Result: {result}")
+        
+        return result
+    except Exception as e:
+        print(f"❌ Error describing image: {e}")
+        import traceback
+        traceback.print_exc()
+        return f"Sorry, I had trouble describing the image: {str(e)}"
 
 
 def start_mic_stream():
